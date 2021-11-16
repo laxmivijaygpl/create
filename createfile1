@@ -1,0 +1,44 @@
+version: "3.7"
+services:
+  backend:
+    build: backend
+    build:
+      context: backend
+      target: development
+    secrets:
+      - db-password
+    depends_on:
+    proxy:
+    build: proxy
+    ports:
+      - 80:80
+      - 8080:80
+    depends_on:
+      - backend
+volumes:
+FROM golang:1.13-alpine AS build
+FROM golang:1.16-alpine AS build
+WORKDIR /go/src/github.com/org/repo
+COPY . 
+RUN go build -o server .
+
+FROM build AS development
+CMD ["go", "run", "main.go"]
+
+FROM alpine:3.12
+EXPOSE 8000
+COPY --from=build /go/src/github.com/org/repo/server /server
+require (
+	github.com/go-sql-driver/mysql v1.3.0
+	github.com/gorilla/context v1.1.1
+	github.com/gorilla/context v1.1.1 // indirect
+	github.com/gorilla/handlers v1.3.0
+	github.com/gorilla/mux v1.6.2
+  github.com/go-sql-driver/mysql v1.3.0 h1:pgwjLi/dvffoP9aabwkT3AKpXQM93QARkjFhDDqC1UE=
+github.com/go-sql-driver/mysql v1.3.0/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
+github.com/gorilla/context v1.1.1 h1:AWwleXJkX/nhcU9bZSnZoi3h/qGYqQAGhq6zZe/aQW8=
+github.com/gorilla/context v1.1.1/go.mod h1:kBGZzfjB9CEq2AlWe17Uuf7NDRt0dE0s8S51q0aT7Yg=
+github.com/gorilla/handlers v1.3.0 h1:tsg9qP3mjt1h4Roxp+M1paRjrVBfPSOpBuVclh6YluI=
+github.com/gorilla/handlers v1.3.0/go.mod h1:Qkdc/uu4tH4g6mTK6auzZ766c4CA0Ng8+o/OAirnOIQ=
+github.com/gorilla/mux v1.6.2 h1:Pgr17XVTNXAk3q/r4CpKzC5xBM/qW1uVLV+IhRZpIIk=
+github.com/gorilla/mux v1.6.2/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
